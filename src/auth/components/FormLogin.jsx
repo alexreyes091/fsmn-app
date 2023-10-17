@@ -17,7 +17,7 @@ export const FormLogin = () => {
 
     // TODO: Separar esto en un hook
     const notify = () => toast.error('Nombre de usuario y contrasena son incorrectos.', {
-        position: "top-right",
+        position: "bottom-left",
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -26,6 +26,7 @@ export const FormLogin = () => {
         progress: undefined,
         theme: "light",
     });
+    
     // Definir el estado inicial para los valores del formulario
     const initialValues = {
         username: '',

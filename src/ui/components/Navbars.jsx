@@ -4,7 +4,7 @@ import { Chip, Avatar } from "@nextui-org/react";
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../auth/Context/Store';
 // LOCALES
-import the_way_logo from '../../assets/the_way_logo.png';
+import the_way_logo_dos from '../../assets/the_way_logo_dos.png';
 
 export const Navbars = () => {
   const navigate = useNavigate();
@@ -19,17 +19,26 @@ export const Navbars = () => {
     setUser({}),
       setLogged(false),
       onNavigate('login')
-      localStorage.clear();
+    localStorage.clear();
   }
 
   return (
     <Navbar className="shadow-md">
-      <NavbarContent className="sm:flex gap-5" justify="center">
-        <NavbarBrand>
-          <img src={the_way_logo} width={100} alt="logotipo the-way" />
+      <NavbarContent className="flex gap-5" justify="center">
+        <NavbarBrand >
+          <img src={the_way_logo_dos} width={100} alt="logotipo the-way" />
         </NavbarBrand>
 
         {/* FUNCIONES SUCURSALES */}
+        <Button
+          disableRipple
+          className="p-0 bg-transparent data-[hover=true]:bg-transparent"
+          radius="sm"
+          onClick={() => onNavigate('home')}
+          variant="light"
+        >
+          <span className="text-[#152026] font-bold">Home</span>
+        </Button>
         <Dropdown>
           <DropdownTrigger>
             <Button
@@ -102,6 +111,7 @@ export const Navbars = () => {
               <DropdownItem
                 key="transportistas"
                 description="Datos generales y tarifas."
+                onClick={() => onNavigate('transportes')}
                 startContent={<IconEye className="text-sky-700" />}
               >
                 Ver
@@ -172,13 +182,13 @@ export const Navbars = () => {
 
       <NavbarContent justify="end">
         <Chip
-        variant="flat"
-        avatar={
-          <Avatar color='primary' name={user.user_account.user.first_name} size="sm" getInitials={(name) => name.charAt(0)} />
-        }
-      >
-        {user.user_account.username}
-      </Chip>
+          variant="flat"
+          avatar={
+            <Avatar color='primary' name={user?.user_account?.user?.first_name} size="sm" getInitials={(name) => name.charAt(0)} />
+          }
+        >
+          {user?.user_account?.username}
+        </Chip>
         <NavbarItem>
           <Button
             as={Link}

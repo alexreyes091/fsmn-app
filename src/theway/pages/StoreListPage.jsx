@@ -3,7 +3,7 @@ import { ListStores } from '../components/ListStores'
 
 export const StoreListPage = () => {
     return (
-        <main className="container mx-auto pt-6">
+        <main className="container mx-auto pt-6 animate__animated animate__fadeIn">
             <div className="bg-gray-100 p-3 md:p-10 rounded-md">
                 <div className='flex gap-5 items-center mb-10'>
                     <IconNotes className='text-red-400' size={64} />
