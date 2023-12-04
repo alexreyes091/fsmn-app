@@ -130,7 +130,7 @@ export const getUsersByIdStore = async (id_store) => {
         const response = await fetch(url);
         const data = await response.json();
         
-        return data[1];
+        return data;
 
     } catch (error) {
         throw new Error(`Error ${error}`);
@@ -165,5 +165,113 @@ export const setAsociate = async (id_user, id_store, distance ) => {
     } catch (error) {
         console.error(error);
         return false;
+    }
+}
+
+
+export const setTrip = async ({id_trip, applicant, transport, id_store} ) => {
+    const url = `${URL_BASE}/trips/`;
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+
+            body: JSON.stringify({
+                id_trip: id_trip, 
+                applicant: applicant,   
+                transport: transport,
+                id_store: id_store,
+            })
+        });
+
+        if (response.ok) {
+            return true;
+        } else {
+            console.log(`Error ${response.status}: ${response.statusText}`);
+            return false;
+        }
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+}
+
+export const setTripUser = async ({id_trip, id_user} ) => {
+    const url = `${URL_BASE}/trips/user_assing/`;
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+
+            body: JSON.stringify({
+                id_trip: id_trip, 
+                id_user: id_user,   
+            })
+        });
+
+        if (response.ok) {
+            return true;
+        } else {
+            console.log(`Error ${response.status}: ${response.statusText}`);
+            return false;
+        }
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+}
+
+export const deleteAllTripUser = async (id_trip) => {
+    const url = `${URL_BASE}/trips/user_assing/${id_trip}`;
+    try {
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            return true;
+        } else {
+            console.log(`Error ${response.status}: ${response.statusText}`);
+            return false;
+        }
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+}
+
+
+export const getTripById = async (id_trip) => {
+    const url = `${URL_BASE}/trips/${id_trip}`
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        return data[1];
+
+    } catch (error) {
+        throw new Error(`Error ${error}`);
+    }
+}
+
+export const getAllTrips = async () => {
+    const url = `${URL_BASE}/trips`
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        return data;
+
+    } catch (error) {
+        throw new Error(`Error ${error}`);
     }
 }

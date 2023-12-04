@@ -9,3 +9,4 @@ export * from './SelectedStore';
 export * from './SelectedTransport';
 export * from './SearchUser';
 export * from './SearchStore';
+export * from './TabListTrips';

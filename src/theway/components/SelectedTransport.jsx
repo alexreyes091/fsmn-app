@@ -3,7 +3,7 @@ import { getAllTransport } from '../../auth/helpers/api';
 import { useEffect, useState } from "react";
 
 // eslint-disable-next-line react/prop-types
-export const SelectedTransport = ({setSelectedTransport}) => {
+export const SelectedTransport = ({setSelectedTransport, isLoadStore = false}) => {
 
     const [loading, setLoading] = useState(true);
     const [transport, setTransport] = useState([]);
@@ -31,6 +31,7 @@ export const SelectedTransport = ({setSelectedTransport}) => {
             ) : (
                 <Select
                     color="default"
+                    isDisabled = {isLoadStore}
                     // variant="bordered"
                     isRequired
                     label="Transportistas"

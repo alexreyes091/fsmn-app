@@ -11,7 +11,7 @@ import { CardSearchStore } from "./CardSearchStore";
 
 
 // eslint-disable-next-line react/prop-types
-export const SearchStore = ({ setDataStore }) => {
+export const SearchStore = ({ setDataStore, isLoadStore=false}) => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [idStore, setIdStore] = useState();
     const [store, setStore] = useState({})
@@ -63,7 +63,7 @@ export const SearchStore = ({ setDataStore }) => {
 
     return (
         <>
-            <Button variant={'shadow'} onPress={onOpen} color="primary">
+            <Button isDisabled={isLoadStore} variant={'shadow'} onPress={onOpen} color="primary">
                 <IconBuilding className="text-white pointer-events-none flex-shrink-0" />
             </Button>
             <Modal

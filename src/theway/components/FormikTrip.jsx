@@ -1,51 +1,61 @@
-import { Button, Input, Divider } from '@nextui-org/react';
-import { Formik, Form, Field } from 'formik';
 import { useEffect, useState } from 'react';
+import { Formik, Form, Field } from 'formik';
+import { Button, Input, Divider } from '@nextui-org/react';
+// Components
 import { SearchStore } from './SearchStore';
-import { useStore } from '../../auth/Context/Store';
-// api
-import { getAllTransport, getUsersByIdStore } from '../../auth/helpers/api';
 import { SelectedTransport } from './SelectedTransport';
+// Helpers
+import { useStore } from '../../auth/Context/Store';
+import { setTrip } from '../../auth/helpers/api';
 
-export const FormikTrip = () => {
+// Tostify
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+// eslint-disable-next-line react/prop-types
+export const FormikTrip = ({setDataTrip}) => {
     const { user } = useStore();
+    const [selectedTransport, setSelectedTransport] = useState();
     const [dataStore, setDataStore] = useState();
+    const [initialValues, setInitialValues] = useState({});
     const [isLoadStore, setIsLoadStore] = useState(false);
-    const [isLoadInfo, setIsLoadInfo] = useState(false);
-    const [transportist, setTransportist] = useState();
-    const [selectedTransport, setSelectedTransport] = useState()
-    const [initialValues, setInitialValues] = useState({})
-    const [users, setUsers] = useState();
+    const [isSaveTrip, setIsSaveTrip] = useState(false);
+
+    const toastSuccess = () => toast.success(`Viaje registrado correctamente`, {
+        position: "bottom-left",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+    });
+
+    const toastError = () => toast.error(`Error al registrar el viaje`, {
+        position: "bottom-left",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+    });
 
     useEffect(() => {
-        if (dataStore) { setIsLoadStore(true) }
-        if (isLoadStore && !isLoadInfo) {
-            const loadData = async () => {
-                const allTransport = await getAllTransport();
-                setTransportist(allTransport.transport);
-
-                const allUserByStore = await getUsersByIdStore(dataStore.store.id_store)
-                setUsers(allUserByStore.users);
-
-                setIsLoadInfo(true);
-                setInitialValues({
-                    id_trip: generateUID(5),
-                    aplicant: `(${user?.user_account?.user?.id_user}) - ${user?.user_account?.user?.first_name}, ${user?.user_account?.user?.last_name}`,
-                    transport: `${selectedTransport.driver} - Placa: ${selectedTransport.licence_plate}`,
-                    id_store: dataStore.store.id_store,
-                    create_date: new Date(),
-                })
-            }
-
-            loadData();
+        if (selectedTransport && dataStore) {
+            setInitialValues({
+                id_store: dataStore.store.id_store,
+                id_trip: generateUID(6),
+                aplicant: user.username,
+                create_date: new Date().toLocaleDateString()
+            })
+            setIsLoadStore(true);
         }
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dataStore,
-        isLoadInfo,
-        isLoadStore,
-        selectedTransport,
-        transportist]);
+     
+    }, [selectedTransport, dataStore, user.username])
+    
 
     const generateUID = (length) => {
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -58,36 +68,53 @@ export const FormikTrip = () => {
     };
 
 
-    const handleSubmit = (values) => {
-        // Aquí puedes manejar la lógica de envío del formulario
-        console.log('Valores del formulario:', values);
+    const handleSubmit = async (trip) => {
+
+        const newTrip = {
+            id_trip: trip.id_trip,
+            applicant: trip.aplicant,
+            transport: selectedTransport.licence_plate,
+            id_store: trip.id_store,
+        }
+
+        const resp = await setTrip(newTrip);
+
+        if(resp){
+            setDataTrip(newTrip);
+            setIsSaveTrip(resp);
+            toastSuccess();
+        } else {
+            toastError();
+        }
     };
 
     const onResetForm = () => {
-        setDataStore({});
-        setSelectedTransport(0);
+        setSelectedTransport(null);
+        setDataStore(null);
         setIsLoadStore(false);
-        setIsLoadInfo(false);
     }
 
     return (
         <div className='w-full p-4 bg-white rounded-md shadow-md'>
             <div className='flex items-center gap-3'>
+                <ToastContainer />
                 <div className='w-5/6 mb-2'>
                     <SelectedTransport
                         setSelectedTransport={setSelectedTransport}
+                        isLoadStore={isLoadStore}
                     />
                 </div>
-                <div className='w-1/6'>
+                <div className="w-1/6">
                     <SearchStore
                         setDataStore={setDataStore}
+                        isLoadStore={isLoadStore}
                     />
                 </div>
             </div>
             <Divider className='my-5' />
             {/* Fin Busqueda */}
             {
-                (isLoadStore && isLoadInfo) ? (
+                (isLoadStore ) ? (
                     <Formik initialValues={initialValues} onSubmit={handleSubmit}>
                         <Form>
                             <div className='mb-3'>
@@ -97,7 +124,7 @@ export const FormikTrip = () => {
                             <div className='grid md:flex gap-4 mb-2'>
                                 <Field name="id_store">
                                     {({ field }) => (
-                                        <Input className isDisabled label="ID Store" {...field} />
+                                        <Input isDisabled label="ID Store" {...field} />
                                     )}
                                 </Field>
                                 <Field name="id_trip">
@@ -117,17 +144,22 @@ export const FormikTrip = () => {
                                 </Field>
                             </div>
                             <Divider className='my-3' />
-                            <div className='flex gap-4'>
-                                <Button onClick={() => onResetForm()} color='danger' type="submit">Cancelar</Button>
-                                <Button color='primary' type="submit">Guardar</Button>
-                            </div>
+                            {
+                                (!isSaveTrip) ? (
+                                    <div className='flex gap-4'>
+                                        <Button onClick={() => onResetForm()} color='danger' type="submit">Cancelar</Button>
+                                        <Button color='primary' type="submit">Guardar</Button>
+                                    </div>
+                                ) : (
+                                    <p className='p-3 bg-green-100 text-sm italic text-center rounded-md'>Viaje registrado, puede continuar asignando los usuarios que viajran.</p>
+                                )
+                            }
                         </Form>
                     </Formik>
                 ) : (
                     <p className='p-3 bg-gray-100 text-sm italic text-center rounded-md'>Favor seleccione una sucursal y un transportista</p>
                 )
             }
-
         </div>
     )
 }

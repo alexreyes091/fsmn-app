@@ -158,6 +158,7 @@ export const Navbars = () => {
               <DropdownItem
                 key="listado-viajes"
                 description="Solciitudes realizadas."
+                onClick={() => onNavigate('listado-viajes')}
                 startContent={<IconListTree className="text-orange-700" />}
               >
                 Listar
